@@ -19,9 +19,9 @@ const (
 	responseDelay = 100 * time.Second
 )
 
-// Handlers is the abstracted interface if someone wants to
+// Handler is the abstracted interface if someone wants to
 // customize/ reimplement this
-type Handlers interface {
+type Handler interface {
 	AnalogRead(byte) (int, error)
 	DigitalRead(byte) (byte, error)
 	DigitalWrite(byte, byte) error
@@ -36,7 +36,7 @@ type Groove struct {
 }
 
 // InitGroove initialises a new instance of Handlers to be used
-func InitGroove(address int) (Handlers, error) {
+func InitGroove(address int) (Handler, error) {
 	module, err := hwio.GetModule(moduleI2C)
 	if err != nil {
 		return nil, err
