@@ -1,7 +1,9 @@
 package groove
 
 import (
+	"fmt"
 	"time"
+	"unsafe"
 
 	"github.com/mrmorphic/hwio"
 )
@@ -12,7 +14,7 @@ const (
 	analogRead   = 3
 	analogWrite  = 4
 	pinMode      = 5
-	dhtRead      = 40
+	dhtRead      = 0x44
 
 	modeOutput    = "output"
 	moduleI2C     = "i2c"
@@ -25,6 +27,7 @@ type Handler interface {
 	AnalogRead(byte) (int, error)
 	DigitalRead(byte) (byte, error)
 	DigitalWrite(byte, byte) error
+	ReadDHT(pin byte) (float32, float32, error)
 	PinMode(byte, string) error
 	Close()
 }
@@ -113,4 +116,40 @@ func (g *Groove) PinMode(pin byte, mode string) error {
 		return err
 	}
 	return nil
+}
+
+// ReadDHT reads raw data from the DHT sensors and
+// parses them and returns a temperature value, a
+// humidity value and an error
+func (g *Groove) ReadDHT(pin byte) (float32, float32, error) {
+	b := []byte{dhtRead, pin, 1, 0}
+	rawdata, err := g.readDHTRawData(b)
+	if err != nil {
+		return 0, 0, err
+	}
+	fmt.Println("rawdata -> ", rawdata)
+	temperatureData := rawdata[1:5]
+
+	tInt := int32(temperatureData[0]) | int32(temperatureData[1])<<8 | int32(temperatureData[2])<<16 | int32(temperatureData[3])<<24
+	t := (*(*float32)(unsafe.Pointer(&tInt)))
+
+	humidityData := rawdata[5:9]
+	humInt := int32(humidityData[0]) | int32(humidityData[1])<<8 | int32(humidityData[2])<<16 | int32(humidityData[3])<<24
+	h := (*(*float32)(unsafe.Pointer(&humInt)))
+	return t, h, nil
+}
+
+func (g *Groove) readDHTRawData(buffer []byte) ([]byte, error) {
+	err := g.i2cDevice.Write(0x02C, buffer)
+	if err != nil {
+		return nil, err
+	}
+	time.Sleep(600 * time.Millisecond)
+	g.i2cDevice.ReadByte(1)
+	time.Sleep(100 * time.Millisecond)
+	raw, err := g.i2cDevice.Read(0x00, 9)
+	if err != nil {
+		return nil, err
+	}
+	return raw, nil
 }
