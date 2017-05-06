@@ -42,12 +42,12 @@ func ReadDHT() (*SmbData, error) {
 }
 
 func toTemp(buf []byte) (int, int) {
-	temp := (int32(buf[0])*256 + int32(buf[1]))
+	temp := (int(buf[0])*256 + int(buf[1]))
 	c := -45 + (175 * temp / 65535.0)
 	f := -49 + (315 * temp / 65535.0)
 	return c, f
 }
 
 func toHumidity(buf []byte) int {
-	return 100 * (int32(buf[3])*256 + int32(buf[4])) / 65535.0
+	return 100 * (int(buf[3])*256 + int(buf[4])) / 65535.0
 }
