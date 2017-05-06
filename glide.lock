@@ -1,0 +1,8 @@
+hash: 2d1e75a49e124ede6380a54c30c3186906aee072c9156b6772fffab9ad3786a7
+updated: 2017-05-06T14:48:11.333591038+05:30
+imports:
+- name: github.com/corrupt/go-smbus
+  version: d22f26546b052f91227a2d1c5b49eef19ef06064
+- name: github.com/mrmorphic/hwio
+  version: 31c3eee75cb2f64e31e0bd6bc20dfb4bfe0f5e80
+testImports: []
