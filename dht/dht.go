@@ -8,9 +8,9 @@ import (
 
 // SmbData is the structure returned by Read
 type SmbData struct {
-	CelsiusTemp   int32
-	FarenheitTemp int32
-	Humidity      int32
+	CelsiusTemp   int
+	FarenheitTemp int
+	Humidity      int
 }
 
 // ReadDHT reads the I2C bus and responds with calculated
