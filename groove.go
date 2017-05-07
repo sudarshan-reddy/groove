@@ -15,7 +15,7 @@ const (
 
 	modeOutput    = "output"
 	moduleI2C     = "i2c"
-	responseDelay = 100 * time.Second
+	responseDelay = 1 * time.Second
 )
 
 // Handler is the abstracted interface if someone wants to
